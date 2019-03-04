@@ -2,4 +2,4 @@
 
 [![Build Status](https://travis-ci.org/ramzesnic/project-lvl2-s443.svg?branch=master)](https://travis-ci.org/ramzesnic/project-lvl2-s443)
 
-[![asciicast](https://asciinema.org/a/pfysDMu56Gg8wjxNokkKmiKb8.svg)](https://asciinema.org/a/pfysDMu56Gg8wjxNokkKmiKb8)
+[![asciicast](https://asciinema.org/a/sHjvFVPJSkWdPqgenTURmxW6z.svg)](https://asciinema.org/a/sHjvFVPJSkWdPqgenTURmxW6z)
