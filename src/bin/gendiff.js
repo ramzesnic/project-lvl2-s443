@@ -8,10 +8,3 @@ commander
   .option('-v, --version', 'output the version number')
   .option('-f, --format [type]', 'Output format')
   .parse(process.argv);
-
-
-// if (commander.format) {
-//   console.log(commander.format);
-// } else if (commander.hell) {
-//   console.log(commander.help());
-// }
