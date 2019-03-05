@@ -1,5 +1,7 @@
 import fs from 'fs';
 import _ from 'lodash';
+import path from 'path';
+import parse from './parsers';
 
 const types = [
   {
@@ -55,29 +57,19 @@ const types = [
   },
 ];
 
-const parser = (pathToFile) => {
-  const data = fs.readFileSync(pathToFile, 'utf-8');
-  return JSON.parse(data);
-};
+const getData = pathToFile => fs.readFileSync(pathToFile, 'utf-8');
 
 const buildAst = (before, after) => {
   const allKeys = _.union(Object.keys(before), Object.keys(after));
   return allKeys.map((key) => {
-    // console.log(key);
-    // console.log(before);
-    // console.log(after);
     const { process } = types.find(({ check }) => check(key, before, after));
     return process(key, before, after);
   });
 };
 
 export default (pathBefore, pathAfter) => {
-  const before = parser(pathBefore);
-  const after = parser(pathAfter);
+  const before = parse(path.extname(pathBefore), getData(pathBefore));
+  const after = parse(path.extname(pathAfter), getData(pathAfter));
   const ast = buildAst(before, after);
-  // ast.toString = function toString() {
-  //   return ['{', ...this.map(obj => obj.toString()), '}'].join('\n');
-  // };
-  // return ast;
-  return ['{', ...ast.map(obj => obj.toString()), '}'].join('\n');
+  return ['{', ...ast, '}'].join('\n');
 };
