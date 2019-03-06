@@ -1,7 +1,7 @@
 import fs from 'fs';
 import genDiff from '../src';
 
-const fileExtes = ['json', 'yaml'];
+const fileExtes = ['json', 'yaml', 'ini'];
 
 const runTest = (ext) => {
   it(`${ext} flat test`, () => {
