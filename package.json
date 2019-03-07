@@ -1,6 +1,6 @@
 {
   "name": "gendiff-2314",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Compares two configuration files and shows a difference.",
   "main": "index.js",
   "scripts": {

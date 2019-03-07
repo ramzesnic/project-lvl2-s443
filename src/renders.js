@@ -3,13 +3,14 @@ const stringify = render => (value, spaces) => {
     return render(value, spaces);
   }
   if (value instanceof Object) {
-    return Object.entries(value).reduce((acc, [key, val1]) => {
-      const val = val1 instanceof Object ? render([{ ...val1 }], spaces + 6) : val1;
-      return `{${acc}\n${' '.repeat(spaces + 6)}${key}: ${val}\n${' '.repeat(spaces + 2)}}`;
+    return Object.entries(value).reduce((acc, [key, val]) => {
+      const newValue = val instanceof Object ? render(val, spaces + 6) : val;
+      return `{${acc}\n${' '.repeat(spaces + 6)}${key}: ${newValue}\n${' '.repeat(spaces + 2)}}`;
     }, '');
   }
   return value;
 };
+
 
 const nodeRenders = {
   nested: (node, renderValue, spaces) => `${' '.repeat(spaces + 4)}${node.key}: ${renderValue(node.children, spaces + 4)}`,
