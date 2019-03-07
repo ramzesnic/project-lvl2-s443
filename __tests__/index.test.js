@@ -11,6 +11,13 @@ const runTest = (ext) => {
     const actual = genDiff(beforePath, afterPath);
     expect(actual).toBe(expected);
   });
+  it(`${ext} nested test`, () => {
+    const beforePath = `__tests__/__fixtures__/before-nested.${ext}`;
+    const afterPath = `__tests__/__fixtures__/after-nested.${ext}`;
+    const expected = fs.readFileSync('__tests__/__fixtures__/expected-nested.txt', 'utf-8');
+    const actual = genDiff(beforePath, afterPath);
+    expect(actual).toBe(expected);
+  });
 };
 
 describe('genDiff', () => fileExtes.forEach(ext => runTest(ext)));

@@ -2,8 +2,18 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import parse from './parsers';
+import render from './renders';
 
 const types = [
+  {
+    type: 'nested',
+    check: (key, before, after) => before[key] instanceof Object && after[key] instanceof Object,
+    process: (key, before, after, buildNode) => ({
+      type: 'nested',
+      key,
+      children: buildNode(before[key], after[key]),
+    }),
+  },
   {
     type: 'unchanged',
     check: (key, before, after) => _.has(before, key)
@@ -12,9 +22,6 @@ const types = [
       type: 'unchanged',
       key,
       value: before[key],
-      toString: function toString() {
-        return `    ${this.key}: ${this.value}`;
-      },
     }),
   },
   {
@@ -24,11 +31,8 @@ const types = [
     process: (key, before, after) => ({
       type: 'changed',
       key,
-      beforeValue: before[key],
-      afterValue: after[key],
-      toString: function toString() {
-        return `  + ${this.key}: ${this.afterValue}\n  - ${this.key}: ${this.beforeValue}`;
-      },
+      before: before[key],
+      after: after[key],
     }),
   },
   {
@@ -38,9 +42,6 @@ const types = [
       type: 'added',
       key,
       value: after[key],
-      toString: function toString() {
-        return `  + ${this.key}: ${this.value}`;
-      },
     }),
   },
   {
@@ -50,9 +51,6 @@ const types = [
       type: 'deleted',
       key,
       value: before[key],
-      toString: function toString() {
-        return `  - ${this.key}: ${this.value}`;
-      },
     }),
   },
 ];
@@ -63,7 +61,7 @@ const buildAst = (before, after) => {
   const allKeys = _.union(Object.keys(before), Object.keys(after));
   return allKeys.map((key) => {
     const { process } = types.find(({ check }) => check(key, before, after));
-    return process(key, before, after);
+    return process(key, before, after, buildAst);
   });
 };
 
@@ -71,5 +69,5 @@ export default (pathBefore, pathAfter) => {
   const before = parse(path.extname(pathBefore), getData(pathBefore));
   const after = parse(path.extname(pathAfter), getData(pathAfter));
   const ast = buildAst(before, after);
-  return ['{', ...ast, '}'].join('\n');
+  return render(ast);
 };
