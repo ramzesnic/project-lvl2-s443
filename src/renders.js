@@ -9,12 +9,12 @@ const stringify = (value, deep) => {
     : value;
 };
 const types = {
-  nested: (item, deep, spaces, iter) => `${spaces}${item.key}: {\n${_.flatten(iter(item.children, deep + 1)).join('\n')}\n${spaces}}`,
-  unchanged: (item, deep, spaces) => `${spaces}  ${item.key}: ${stringify(item.value, deep)}`,
-  added: (item, deep, spaces) => `${spaces}+ ${item.key}: ${stringify(item.value, deep)}`,
-  deleted: (item, deep, spaces) => `${spaces}- ${item.key}: ${stringify(item.value, deep)}`,
-  changed: (item, deep, spaces) => [`${spaces}- ${item.key}: ${stringify(item.oldValue, deep)}`,
-    `${spaces}+ ${item.key}: ${stringify(item.newValue, deep)}`],
+  nested: (node, deep, spaces, iter) => `${spaces}${node.key}: {\n${_.flatten(iter(node.children, deep + 1)).join('\n')}\n${spaces}}`,
+  unchanged: (node, deep, spaces) => `${spaces}  ${node.key}: ${stringify(node.value, deep)}`,
+  added: (node, deep, spaces) => `${spaces}+ ${node.key}: ${stringify(node.value, deep)}`,
+  deleted: (node, deep, spaces) => `${spaces}- ${node.key}: ${stringify(node.value, deep)}`,
+  changed: (node, deep, spaces) => [`${spaces}- ${node.key}: ${stringify(node.oldValue, deep)}`,
+    `${spaces}+ ${node.key}: ${stringify(node.newValue, deep)}`],
 };
 const render = (ast) => {
   const iter = (node, deep) => node.map((item) => {
