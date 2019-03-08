@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const getSpaces = deep => ' '.repeat(2 * deep);
+const getSpaces = deep => ' '.repeat(deep * 2);
 const stringify = (value, deep) => {
   const spaces = getSpaces(deep + 2);
   const closeBlockSpaces = getSpaces(deep);
