@@ -92,7 +92,7 @@
     "type": "added",
     "key": "group3",
     "value": {
-      "fee": 100500
+      "fee": "100500"
     }
   }
 ]
