@@ -66,9 +66,9 @@ const buildAst = (dataBefore, dataAfter) => {
   });
 };
 
-export default (pathBefore, pathdataAfter) => {
+export default (pathBefore, pathAfter, format) => {
   const dataBefore = parse(path.extname(pathBefore), getData(pathBefore));
-  const datadataAfter = parse(path.extname(pathdataAfter), getData(pathdataAfter));
+  const datadataAfter = parse(path.extname(pathAfter), getData(pathAfter));
   const ast = buildAst(dataBefore, datadataAfter);
-  return render(ast);
+  return render(ast, format);
 };

@@ -8,14 +8,28 @@ const runTest = (ext) => {
     const beforePath = `__tests__/__fixtures__/before-flat.${ext}`;
     const afterPath = `__tests__/__fixtures__/after-flat.${ext}`;
     const expected = fs.readFileSync('__tests__/__fixtures__/expected-flat.txt', 'utf-8');
-    const actual = genDiff(beforePath, afterPath);
+    const actual = genDiff(beforePath, afterPath, 'diff');
     expect(actual).toBe(expected);
   });
   it(`${ext} nested test`, () => {
     const beforePath = `__tests__/__fixtures__/before-nested.${ext}`;
     const afterPath = `__tests__/__fixtures__/after-nested.${ext}`;
     const expected = fs.readFileSync('__tests__/__fixtures__/expected-nested.txt', 'utf-8');
-    const actual = genDiff(beforePath, afterPath);
+    const actual = genDiff(beforePath, afterPath, 'diff');
+    expect(actual).toBe(expected);
+  });
+  it(`${ext} flat test plain`, () => {
+    const beforePath = `__tests__/__fixtures__/before-flat.${ext}`;
+    const afterPath = `__tests__/__fixtures__/after-flat.${ext}`;
+    const expected = fs.readFileSync('__tests__/__fixtures__/expected-flat-plain.txt', 'utf-8');
+    const actual = genDiff(beforePath, afterPath, 'plain');
+    expect(actual).toBe(expected);
+  });
+  it(`${ext} nested test plain`, () => {
+    const beforePath = `__tests__/__fixtures__/before-nested.${ext}`;
+    const afterPath = `__tests__/__fixtures__/after-nested.${ext}`;
+    const expected = fs.readFileSync('__tests__/__fixtures__/expected-nested-plain.txt', 'utf-8');
+    const actual = genDiff(beforePath, afterPath, 'plain');
     expect(actual).toBe(expected);
   });
 };

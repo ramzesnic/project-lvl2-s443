@@ -1,0 +1,5 @@
+
+Property 'timeout' was updates. From '50' to '20'
+Property 'proxy' was added with value '123.234.53.22'
+Property 'follow' was added with value 'false'
+Property 'verbose' was added with value 'true'
