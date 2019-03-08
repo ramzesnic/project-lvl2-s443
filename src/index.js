@@ -7,67 +7,68 @@ import render from './renders';
 const types = [
   {
     type: 'nested',
-    check: (key, before, after) => before[key] instanceof Object && after[key] instanceof Object,
-    process: (key, before, after, buildNode) => ({
+    check: (key, dataBefore, dataAfter) => dataBefore[key] instanceof Object
+      && dataAfter[key] instanceof Object,
+    process: (key, dataBefore, dataAfter, buildNode) => ({
       type: 'nested',
       key,
-      children: buildNode(before[key], after[key]),
+      children: buildNode(dataBefore[key], dataAfter[key]),
     }),
   },
   {
     type: 'unchanged',
-    check: (key, before, after) => _.has(before, key)
-      && _.has(after, key) && before[key] === after[key],
-    process: (key, before) => ({
+    check: (key, dataBefore, dataAfter) => _.has(dataBefore, key)
+      && _.has(dataAfter, key) && dataBefore[key] === dataAfter[key],
+    process: (key, dataBefore) => ({
       type: 'unchanged',
       key,
-      value: before[key],
+      value: dataBefore[key],
     }),
   },
   {
     type: 'changed',
-    check: (key, before, after) => _.has(before, key)
-      && _.has(after, key) && before[key] !== after[key],
-    process: (key, before, after) => ({
+    check: (key, dataBefore, dataAfter) => _.has(dataBefore, key)
+      && _.has(dataAfter, key) && dataBefore[key] !== dataAfter[key],
+    process: (key, dataBefore, dataAfter) => ({
       type: 'changed',
       key,
-      before: before[key],
-      after: after[key],
+      oldValue: dataBefore[key],
+      newValue: dataAfter[key],
     }),
   },
   {
     type: 'added',
-    check: (key, before, after) => !_.has(before, key) && _.has(after, key),
-    process: (key, before, after) => ({
+    check: (key, dataBefore, dataAfter) => !_.has(dataBefore, key) && _.has(dataAfter, key),
+    process: (key, dataBefore, dataAfter) => ({
       type: 'added',
       key,
-      value: after[key],
+      value: dataAfter[key],
     }),
   },
   {
     type: 'deleted',
-    check: (key, before, after) => _.has(before, key) && !_.has(after, key),
-    process: (key, before) => ({
+    check: (key, dataBefore, dataAfter) => _.has(dataBefore, key) && !_.has(dataAfter, key),
+    process: (key, dataBefore) => ({
       type: 'deleted',
       key,
-      value: before[key],
+      value: dataBefore[key],
     }),
   },
 ];
 
 const getData = pathToFile => fs.readFileSync(pathToFile, 'utf-8');
 
-const buildAst = (before, after) => {
-  const allKeys = _.union(Object.keys(before), Object.keys(after));
+const buildAst = (dataBefore, dataAfter) => {
+  const allKeys = _.union(Object.keys(dataBefore), Object.keys(dataAfter));
   return allKeys.map((key) => {
-    const { process } = types.find(({ check }) => check(key, before, after));
-    return process(key, before, after, buildAst);
+    const { process } = types.find(({ check }) => check(key, dataBefore, dataAfter));
+    return process(key, dataBefore, dataAfter, buildAst);
   });
 };
 
-export default (pathBefore, pathAfter) => {
-  const before = parse(path.extname(pathBefore), getData(pathBefore));
-  const after = parse(path.extname(pathAfter), getData(pathAfter));
-  const ast = buildAst(before, after);
+export default (pathBefore, pathdataAfter) => {
+  const dataBefore = parse(path.extname(pathBefore), getData(pathBefore));
+  const datadataAfter = parse(path.extname(pathdataAfter), getData(pathdataAfter));
+  const ast = buildAst(dataBefore, datadataAfter);
   return render(ast);
 };

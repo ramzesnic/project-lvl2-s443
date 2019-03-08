@@ -1,29 +1,28 @@
-const stringify = render => (value, spaces) => {
-  if (value instanceof Array) {
-    return render(value, spaces);
-  }
-  if (value instanceof Object) {
-    return Object.entries(value).reduce((acc, [key, val]) => {
-      const newValue = val instanceof Object ? render(val, spaces + 6) : val;
-      return `{${acc}\n${' '.repeat(spaces + 6)}${key}: ${newValue}\n${' '.repeat(spaces + 2)}}`;
-    }, '');
-  }
-  return value;
+import _ from 'lodash';
+
+const getSpaces = deep => ' '.repeat(2 * deep);
+const stringify = (value, deep) => {
+  const spaces = getSpaces(deep + 2);
+  const closeBlockSpaces = getSpaces(deep);
+  return value instanceof Object
+    ? `{\n${Object.keys(value).map(key => `${spaces}${key}: ${value[key] instanceof Object ? stringify(value[key], deep) : value[key]}`)}\n${closeBlockSpaces}}`
+    : value;
 };
-
-
-const nodeRenders = {
-  nested: (node, renderValue, spaces) => `${' '.repeat(spaces + 4)}${node.key}: ${renderValue(node.children, spaces + 4)}`,
-  unchanged: (node, renderValue, spaces) => `${' '.repeat(spaces + 4)}${node.key}: ${renderValue(node.value, spaces + 4)}`,
-  added: (node, renderValue, spaces) => `${' '.repeat(spaces + 2)}+ ${node.key}: ${renderValue(node.value, spaces + 2)}`,
-  deleted: (node, renderValue, spaces) => `${' '.repeat(spaces + 2)}- ${node.key}: ${renderValue(node.value, spaces + 2)}`,
-  changed: (node, renderValue, spaces) => `${' '
-    .repeat(spaces + 2)}+ ${node.key}: ${renderValue(node.after, spaces + 2)}\n${' '
-    .repeat(spaces + 2)}- ${node.key}: ${renderValue(node.before, spaces + 2)}`,
+const types = {
+  nested: (item, deep, spaces, iter) => `${spaces}${item.key}: {\n${_.flatten(iter(item.children, deep + 1)).join('\n')}\n${spaces}}`,
+  unchanged: (item, deep, spaces) => `${spaces}  ${item.key}: ${stringify(item.value, deep)}`,
+  added: (item, deep, spaces) => `${spaces}+ ${item.key}: ${stringify(item.value, deep)}`,
+  deleted: (item, deep, spaces) => `${spaces}- ${item.key}: ${stringify(item.value, deep)}`,
+  changed: (item, deep, spaces) => [`${spaces}- ${item.key}: ${stringify(item.oldValue, deep)}`,
+    `${spaces}+ ${item.key}: ${stringify(item.newValue, deep)}`],
 };
+const render = (ast) => {
+  const iter = (node, deep) => node.map((item) => {
+    const spaces = getSpaces(deep);
+    return types[item.type](item, deep, spaces, iter);
+  });
 
-const render = (ast, spaces = 0) => [
-  '{', ...ast.map(node => nodeRenders[node.type](node, stringify(render), spaces)), `${' '.repeat(spaces)}}`,
-].join('\n');
+  return `{\n${_.flatten(iter(ast, 1)).join('\n')}\n}`;
+};
 
 export default render;
