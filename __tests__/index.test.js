@@ -34,4 +34,4 @@ const runTest = (ext) => {
   });
 };
 
-describe('genDiff', () => fileExtes.forEach(ext => runTest(ext)));
+describe('genDiff', () => fileExtes.forEach(runTest));

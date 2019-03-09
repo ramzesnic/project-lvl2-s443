@@ -2,14 +2,15 @@ import _ from 'lodash';
 
 const getSpaces = deep => ' '.repeat(deep * 2);
 const stringify = (value, deep) => {
-  const spaces = getSpaces(deep + 2);
-  const closeBlockSpaces = getSpaces(deep);
-  return value instanceof Object
-    ? `{\n${Object.keys(value).map(key => `${spaces}${key}: ${value[key] instanceof Object ? stringify(value[key], deep) : value[key]}`)}\n${closeBlockSpaces}}`
-    : value;
+  if (value instanceof Object) {
+    const spaces = getSpaces(deep + 2);
+    const closeBlockSpaces = getSpaces(deep);
+    return `{\n${Object.keys(value).map(key => `${spaces}${key}: ${stringify(value[key], deep)}`)}\n${closeBlockSpaces}}`;
+  }
+  return value;
 };
 const types = {
-  nested: (node, deep, spaces, iter) => `${spaces}${node.key}: {\n${_.flatten(iter(node.children, deep + 1)).join('\n')}\n${spaces}}`,
+  nested: (node, deep, spaces, iter) => [`${spaces}${node.key}: {`, iter(node.children, deep + 1), `${spaces}}`],
   unchanged: (node, deep, spaces) => `${spaces}  ${node.key}: ${stringify(node.value, deep)}`,
   added: (node, deep, spaces) => `${spaces}+ ${node.key}: ${stringify(node.value, deep)}`,
   deleted: (node, deep, spaces) => `${spaces}- ${node.key}: ${stringify(node.value, deep)}`,
@@ -21,8 +22,8 @@ const render = (ast) => {
     const spaces = getSpaces(deep);
     return types[item.type](item, deep, spaces, iter);
   });
-
-  return `{\n${_.flatten(iter(ast, 1)).join('\n')}\n}`;
+  const result = iter(ast, 1);
+  return `{\n${_.flattenDeep(result).join('\n')}\n}`;
 };
 
 export default render;

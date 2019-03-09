@@ -6,7 +6,6 @@ import render from './renders';
 
 const types = [
   {
-    type: 'nested',
     check: (key, dataBefore, dataAfter) => dataBefore[key] instanceof Object
       && dataAfter[key] instanceof Object,
     process: (key, dataBefore, dataAfter, buildNode) => ({
@@ -16,7 +15,6 @@ const types = [
     }),
   },
   {
-    type: 'unchanged',
     check: (key, dataBefore, dataAfter) => _.has(dataBefore, key)
       && _.has(dataAfter, key) && dataBefore[key] === dataAfter[key],
     process: (key, dataBefore) => ({
@@ -26,7 +24,6 @@ const types = [
     }),
   },
   {
-    type: 'changed',
     check: (key, dataBefore, dataAfter) => _.has(dataBefore, key)
       && _.has(dataAfter, key) && dataBefore[key] !== dataAfter[key],
     process: (key, dataBefore, dataAfter) => ({
@@ -37,7 +34,6 @@ const types = [
     }),
   },
   {
-    type: 'added',
     check: (key, dataBefore, dataAfter) => !_.has(dataBefore, key) && _.has(dataAfter, key),
     process: (key, dataBefore, dataAfter) => ({
       type: 'added',
@@ -46,7 +42,6 @@ const types = [
     }),
   },
   {
-    type: 'deleted',
     check: (key, dataBefore, dataAfter) => _.has(dataBefore, key) && !_.has(dataAfter, key),
     process: (key, dataBefore) => ({
       type: 'deleted',
