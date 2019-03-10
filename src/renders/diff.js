@@ -2,14 +2,14 @@ import _ from 'lodash';
 
 const getSpaces = deep => ' '.repeat(deep * 2);
 const stringify = (value, deep) => {
-  if (value instanceof Object) {
-    const spaces = getSpaces(deep + 2);
-    const closeBlockSpaces = getSpaces(deep);
-    return `{\n${Object.keys(value).map(key => `${spaces}${key}: ${stringify(value[key], deep)}`)}\n${closeBlockSpaces}}`;
+  if (!(value instanceof Object)) {
+    return value;
   }
-  return value;
+  const spaces = getSpaces(deep + 2);
+  const closeBlockSpaces = getSpaces(deep);
+  return `{\n${Object.keys(value).map(key => `${spaces}${key}: ${stringify(value[key], deep)}`)}\n${closeBlockSpaces}}`;
 };
-const types = {
+const renderers = {
   nested: (node, deep, spaces, iter) => [`${spaces}${node.key}: {`, iter(node.children, deep + 1), `${spaces}}`],
   unchanged: (node, deep, spaces) => `${spaces}  ${node.key}: ${stringify(node.value, deep)}`,
   added: (node, deep, spaces) => `${spaces}+ ${node.key}: ${stringify(node.value, deep)}`,
@@ -20,7 +20,7 @@ const types = {
 const render = (ast) => {
   const iter = (node, deep) => node.map((item) => {
     const spaces = getSpaces(deep);
-    return types[item.type](item, deep, spaces, iter);
+    return renderers[item.type](item, deep, spaces, iter);
   });
   const result = iter(ast, 1);
   return `{\n${_.flattenDeep(result).join('\n')}\n}`;

@@ -1,6 +1,8 @@
+import _ from 'lodash';
+
 const stringify = value => (value instanceof Object ? '[complex value]' : value);
 const types = {
-  nested: (node, nodePath, iter) => `${iter(node.children, [...nodePath, node.key]).filter(item => item != null).join('\n')}`,
+  nested: (node, nodePath, iter) => iter(node.children, [...nodePath, node.key]),
   unchanged: () => null,
   added: (node, nodePath) => `Property '${[...nodePath, node.key].join('.')}' was added with value '${stringify(node.value)}'`,
   deleted: (node, nodePath) => `Property '${[...nodePath, node.key].join('.')}' was removed`,
@@ -9,7 +11,7 @@ const types = {
 
 const render = (ast) => {
   const iter = (node, nodePath) => node.map(item => types[item.type](item, nodePath, iter));
-  return iter(ast, []).join('\n');
+  return _.flattenDeep(iter(ast, [])).filter(item => item != null).join('\n');
 };
 
 export default render;
