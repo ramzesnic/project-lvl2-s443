@@ -23,7 +23,7 @@ const render = (ast, startDeep = 1) => {
     return renderers[item.type](item, deep, spaces, render);
   });
   const result = iter(ast, startDeep);
-  return `{\n${_.flattenDeep(result).join('\n')}\n${getSpaces(startDeep - 1)}}`;
+  return `{\n${_.flatten(result).join('\n')}\n${getSpaces(startDeep - 1)}}`;
 };
 
 export default render;
