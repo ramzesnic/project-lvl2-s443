@@ -10,20 +10,20 @@ const stringify = (value, deep) => {
   return `{\n${Object.keys(value).map(key => `${spaces}${key}: ${stringify(value[key], deep)}`)}\n${closeBlockSpaces}}`;
 };
 const renderers = {
-  nested: (node, deep, spaces, iter) => [`${spaces}${node.key}: {`, iter(node.children, deep + 1), `${spaces}}`],
+  nested: (node, deep, spaces, render) => `${spaces}${node.key}: ${render(node.children, deep + 1)}`,
   unchanged: (node, deep, spaces) => `${spaces}  ${node.key}: ${stringify(node.value, deep)}`,
   added: (node, deep, spaces) => `${spaces}+ ${node.key}: ${stringify(node.value, deep)}`,
   deleted: (node, deep, spaces) => `${spaces}- ${node.key}: ${stringify(node.value, deep)}`,
   changed: (node, deep, spaces) => [`${spaces}- ${node.key}: ${stringify(node.oldValue, deep)}`,
     `${spaces}+ ${node.key}: ${stringify(node.newValue, deep)}`],
 };
-const render = (ast) => {
+const render = (ast, startDeep = 1) => {
   const iter = (node, deep) => node.map((item) => {
     const spaces = getSpaces(deep);
-    return renderers[item.type](item, deep, spaces, iter);
+    return renderers[item.type](item, deep, spaces, render);
   });
-  const result = iter(ast, 1);
-  return `{\n${_.flattenDeep(result).join('\n')}\n}`;
+  const result = iter(ast, startDeep);
+  return `{\n${_.flattenDeep(result).join('\n')}\n${getSpaces(startDeep - 1)}}`;
 };
 
 export default render;
